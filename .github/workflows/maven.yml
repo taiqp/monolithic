@@ -13,7 +13,7 @@ env:
   REGISTRY: "registry.digitalocean.com/taiqp"
 
 jobs:
-  compile:
+  Build:
 
     runs-on: ubuntu-latest
     steps:
@@ -47,6 +47,8 @@ jobs:
     - name: Build the Docker image
       run: |
         docker build . --file Dockerfile --tag taiqp/visualpath:$(date +%s)
+    - name: Push to Digital Ocean Registry
+      run: |
         docker push ${{ env.REGISTRY }}/visualpath:$(date +%s)
         
 
