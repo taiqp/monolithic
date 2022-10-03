@@ -9,6 +9,9 @@ on:
   pull_request:
     branches: [ "main" ]
 
+env:
+  REGISTRY: "registry.digitalocean.com/taiqp"
+
 jobs:
   compile:
 
@@ -28,8 +31,24 @@ jobs:
       run: mvn test
     - name: Integration Test 
       run: mvn verify -DskipUnitTests
+    
+    # - name: ACR authentication
+    #   uses: azure/docker-login@v1
+    #   with:
+    #     login-server: ${{ env.REGISTRYNAME }}.azurecr.io
+    #     username: ${{ steps.acrCredentials.outputs.acr_username }}
+    #     password: ${{ steps.acrCredentials.outputs.acr_password }}
+    - name: Docker Auth
+      uses: 'docker/login-action@v1'
+      with:
+        username: 'dop_v1_a570c58b6636b2f7428db2fc525ad8d56ebe6b0c30e6959ecdac189df977186d'
+        password: 'dop_v1_a570c58b6636b2f7428db2fc525ad8d56ebe6b0c30e6959ecdac189df977186d'
+        registry: '${{ env.REGISTRY }}'
     - name: Build the Docker image
-      run: docker build . --file Dockerfile --tag taiqp/visualpath:$(date +%s)
+      run: |
+        docker build . --file Dockerfile --tag taiqp/visualpath:$(date +%s)
+        docker push ${{ env.REGISTRY }}/visualpath:$(date +%s)
+        
 
   build:
     runs-on: ubuntu-latest
