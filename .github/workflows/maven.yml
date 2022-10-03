@@ -13,7 +13,7 @@ env:
   REGISTRY: "registry.digitalocean.com/taiqp"
 
 jobs:
-  Build:
+  Compile:
     name: Build Docker Image and Push to Registry
     runs-on: ubuntu-latest
     steps:
@@ -38,6 +38,8 @@ jobs:
     #     login-server: ${{ env.REGISTRYNAME }}.azurecr.io
     #     username: ${{ steps.acrCredentials.outputs.acr_username }}
     #     password: ${{ steps.acrCredentials.outputs.acr_password }}
+  Build:
+    steps:
     - name: Docker Auth
       uses: 'docker/login-action@v1'
       with:
@@ -46,10 +48,10 @@ jobs:
         registry: '${{ env.REGISTRY }}'
     - name: Build the Docker image
       run: 
-        docker build . --file Dockerfile --tag taiqp/visualpath:$(date +%s)
+        docker build . --file Dockerfile --tag taiqp/visualpath:v1.${{GITHUB_RUN_ID}}
     - name: Push to Digital Ocean Registry
       run: 
-        docker push 'taiqp/visualpath:$(date +%s)'
+        docker push 'taiqp/visualpath:v1.${{GITHUB_RUN_ID}}'
         
 
   Deploy:
