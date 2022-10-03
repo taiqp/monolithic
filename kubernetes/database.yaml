@@ -1,0 +1,52 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: db01
+spec:
+  selector:
+    matchLabels:
+      app: db01
+  template:
+    metadata:
+      labels:
+        app: db01
+    spec:
+      imagePullSecrets:
+      - name: regcred
+      containers:
+      - name: db01
+        image: registry.digitalocean.com/taiqp/visualdb:v1.1
+        resources:
+          requests:
+            memory: "500Mi"
+            cpu: "250m"
+          limits:
+            memory: "1Gi"
+            cpu: "750m"
+        ports:
+        - containerPort: 3306
+        volumeMounts:
+        - name:  dbvol
+          mountPath: /var/lib/mysql
+        env:
+          - name:  MYSQL_ROOT_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name:  mysecret
+                key:  dbpass
+      volumes:
+      - name: dbvol
+        persistentVolumeClaim:  
+          claimName: db-pvc
+--- 
+apiVersion: v1
+kind: Service
+metadata:
+  name: myapp
+spec:
+  selector:
+    app: myapp
+  ports:
+  - port: 3306
+    targetPort: 3306
+  type: NodePort

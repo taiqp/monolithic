@@ -63,4 +63,8 @@ jobs:
 # Run any kubectl commands you want!
     - name: Get nodes
       run: kubectl get nodes
+    - name: Deploy sample Nginx
+      run: |
+        kubectl create deployment nginx --image=nginx
+        kubectl expose deployment nginx --port=80 --type=NodePort
 
