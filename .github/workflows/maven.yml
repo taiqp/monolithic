@@ -13,47 +13,54 @@ env:
   REGISTRY: "registry.digitalocean.com/taiqp"
 
 jobs:
-  Build:
-    name: Build Docker Image and Push to Registry
-    runs-on: ubuntu-latest
-    steps:
-    - uses: actions/checkout@v3
-    - name: Set up JDK 8
-      uses: actions/setup-java@v3
-      with:
-        java-version: '8'
-        distribution: 'adopt'
-        cache: maven
-    - name: Build with Maven
-      run: mvn clean install -DskipTests
-      # run: mvn -B package --file pom.xml
-    - name: Unit Test with Maven
-      run: mvn test
-    - name: Integration Test 
-      run: mvn verify -DskipUnitTests
-    
-    # - name: ACR authentication
-    #   uses: azure/docker-login@v1
-    #   with:
-    #     login-server: ${{ env.REGISTRYNAME }}.azurecr.io
-    #     username: ${{ steps.acrCredentials.outputs.acr_username }}
-    #     password: ${{ steps.acrCredentials.outputs.acr_password }}
-    - name: Docker Auth
-      uses: 'docker/login-action@v1'
-      with:
-        username: 'dop_v1_a570c58b6636b2f7428db2fc525ad8d56ebe6b0c30e6959ecdac189df977186d'
-        password: 'dop_v1_a570c58b6636b2f7428db2fc525ad8d56ebe6b0c30e6959ecdac189df977186d'
-        registry: '${{ env.REGISTRY }}'
-    - name: Build the Docker image
-      run: 
-        docker build . --file Dockerfile --tag ${{env.REGISTRY}}/visualpath:v1.${GITHUB_RUN_ID}
-    - name: Push to Digital Ocean Registry
-      run: 
-        docker push ${{env.REGISTRY}}/visualpath:v1.${GITHUB_RUN_ID}
+  # Build:
+  #   name: Build Docker Image and Push to Registry
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #   - uses: actions/checkout@v3
+  #   - name: Set up JDK 8
+  #     uses: actions/setup-java@v3
+  #     with:
+  #       java-version: '8'
+  #       distribution: 'adopt'
+  #       cache: maven
+  #   - name: Build with Maven
+  #     run: mvn clean install -DskipTests
+  #   - name: Unit Test with Maven
+  #     run: mvn test
+  #   - name: Integration Test 
+  #     run: mvn verify -DskipUnitTests
+
+  #   - name: Login to Digital Ocean Registry
+  #     uses: 'docker/login-action@v1'
+  #     with:
+  #       username: 'dop_v1_a570c58b6636b2f7428db2fc525ad8d56ebe6b0c30e6959ecdac189df977186d'
+  #       password: 'dop_v1_a570c58b6636b2f7428db2fc525ad8d56ebe6b0c30e6959ecdac189df977186d'
+  #       registry: '${{ env.REGISTRY }}'
+  #   - name: Build the Docker image
+  #     run: 
+  #       docker build . --file Dockerfile --tag ${{env.REGISTRY}}/visualpath:v1.${GITHUB_RUN_ID}
+  #   - name: Push to Digital Ocean Registry
+  #     run: 
+  #       docker push ${{env.REGISTRY}}/visualpath:v1.${GITHUB_RUN_ID}
+  #   - name: Deploy to Kubernetes
         
 
   Deploy:
     name: Deploy to Kubernetes
     runs-on: ubuntu-latest
+    needs: [Build]
     steps:
     - uses: actions/checkout@v3
+    
+    - name: DigitalOcean Kubernetes
+      uses: matootie/dokube@v1.4.0
+      with:
+        personalAccessToken: 'dop_v1_a570c58b6636b2f7428db2fc525ad8d56ebe6b0c30e6959ecdac189df977186d'
+        clusterName: 'taiqp-k8s'
+        # version: "1.20.15"
+
+# Run any kubectl commands you want!
+    - name: Get nodes
+      run: kubectl get nodes
+
