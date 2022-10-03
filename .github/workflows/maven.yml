@@ -28,10 +28,10 @@ jobs:
       run: mvn test
     - name: Integration Test 
       run: mvn verify -DskipUnitTests
+    - name: Build the Docker image
+      run: docker build . --file Dockerfile --tag taiqp/visualpath:$(date +%s)
 
   build:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v3
-    - name: Build the Docker image
-      run: docker build . --file Dockerfile --tag my-image-name:$(date +%s)
