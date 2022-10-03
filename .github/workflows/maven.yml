@@ -48,10 +48,10 @@ jobs:
         registry: '${{ env.REGISTRY }}'
     - name: Build the Docker image
       run: 
-        docker build . --file Dockerfile --tag taiqp/visualpath:v1.${{GITHUB_RUN_ID}}
+        docker build . --file Dockerfile --tag taiqp/visualpath:v1.${{env.GITHUB_RUN_ID}}
     - name: Push to Digital Ocean Registry
       run: 
-        docker push 'taiqp/visualpath:v1.${{GITHUB_RUN_ID}}'
+        docker push 'taiqp/visualpath:v1.${{env.GITHUB_RUN_ID}}'
         
 
   Deploy:
