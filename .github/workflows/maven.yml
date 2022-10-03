@@ -45,10 +45,10 @@ jobs:
         password: 'dop_v1_a570c58b6636b2f7428db2fc525ad8d56ebe6b0c30e6959ecdac189df977186d'
         registry: '${{ env.REGISTRY }}'
     - name: Build the Docker image
-      run: |
+      run: 
         docker build . --file Dockerfile --tag taiqp/visualpath:$(date +%s)
     - name: Push to Digital Ocean Registry
-      run: |
+      run: 
         docker push ${{ env.REGISTRY }}/visualpath:$(date +%s)
         
 
