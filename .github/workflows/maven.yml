@@ -14,7 +14,7 @@ env:
 
 jobs:
   Build:
-
+    name: Build Docker Image and Push to Registry
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v3
@@ -52,7 +52,8 @@ jobs:
         docker push '${{ env.REGISTRY }}/visualpath:$(date +%s)'
         
 
-  build:
+  Deploy:
+    name: Deploy to Kubernetes
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v3
