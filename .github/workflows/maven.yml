@@ -49,7 +49,7 @@ jobs:
         docker build . --file Dockerfile --tag taiqp/visualpath:$(date +%s)
     - name: Push to Digital Ocean Registry
       run: 
-        docker push ${{ env.REGISTRY }}/visualpath:$(date +%s)
+        docker push '${{ env.REGISTRY }}/visualpath:$(date +%s)'
         
 
   build:
